@@ -1,1 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNA Sequence Group Classifier</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #222;
+    }
+    header {
+      background: #14406b;
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; }
+    main {
+      max-width: 950px;
+      margin: 25px auto;
+      padding: 0 16px 50px;
+    }
+    section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    h2 { color: #14406b; margin-top: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    th, td {
+      border: 1px solid #d7dee8;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background: #eaf1f8; }
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #c9d6e4;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    button {
+      background: #14406b;
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #0d2f4f; }
+    .result {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 10px;
+      display: none;
+    }
+    .group-a { background: #e7f6ec; border: 2px solid #379a58; }
+    .group-b { background: #fff2e5; border: 2px solid #d98218; }
+    .error { background: #fdecec; border: 2px solid #c0392b; }
+    .note {
+      background: #eef4fb;
+      border-left: 5px solid #14406b;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .badge {
+      display: inline-block;
+      background: #14406b;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    footer {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
 
+<body>
+  <header>
+    <h1>🧬 DNA Sequence Group Classifier</h1>
+    <p>Machine-learning-based classification of DNA sequences into Group A or Group B</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Project objective</h2>
+      <p>
+        This project tests whether a simple machine-learning model can learn patterns from labelled
+        DNA sequences and predict the group of an unknown sequence.
+      </p>
+      <p>
+        Each DNA sequence is converted into numerical features: A count, T count, G count, C count,
+        sequence length, and GC content.
+      </p>
+    </section>
+
+    <section>
+      <h2>Training dataset</h2>
+      <table id="trainingTable">
+        <thead>
+          <tr>
+            <th>Sequence ID</th>
+            <th>DNA sequence</th>
+            <th>Group</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Extracted features</h2>
+      <table id="featureTable">
+        <thead>
+          <tr>
+            <th>Sequence ID</th>
+            <th>DNA sequence</th>
+            <th>A</th>
+            <th>T</th>
+            <th>G</th>
+            <th>C</th>
+            <th>Length</th>
+            <th>GC content (%)</th>
+            <th>Group</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="note">
+        <strong>GC content formula:</strong><br>
+        GC content (%) = ((G + C) / total sequence length) × 100
+      </div>
+    </section>
+
+    <section>
+      <h2>Model result</h2>
+      <p>
+        A Decision Tree classifier was trained using the six numerical features from the four labelled
+        DNA sequences.
+      </p>
+      <p><span class="badge">Training accuracy: 100%</span></p>
+      <div class="note">
+        The model correctly classified all four training sequences. However, this is training accuracy,
+        not test accuracy. Because only four sequences were used, it does not prove that the model will
+        correctly classify new DNA sequences.
+      </div>
+
+      <h3>Most useful feature</h3>
+      <p>
+        The most useful feature was the <strong>G count</strong>. Group A sequences have 2 G bases,
+        while Group B sequences have 3 or 4 G bases. Therefore, the model learned that a higher G count
+        is associated with Group B.
+      </p>
+    </section>
+
+    <section>
+      <h2>Predict an unknown sequence</h2>
+      <label for="dnaInput"><strong>Enter a DNA sequence:</strong></label>
+      <input id="dnaInput" value="ATGCGCGATC" />
+      <button onclick="predictGroup()">Predict group</button>
+
+      <div id="result" class="result"></div>
+    </section>
+
+    <section>
+      <h2>Genomics application</h2>
+      <p>
+        One application of AI and machine learning in genomics is disease-risk prediction from genetic
+        variants. Machine-learning models can analyse patterns in DNA variants and help estimate a
+        person’s risk of certain inherited or complex diseases.
+      </p>
+      <p>
+        This can support early screening, personalised prevention, and more targeted medical care.
+        However, predictions must be validated carefully because genetics is only one factor affecting
+        health.
+      </p>
+    </section>
+
+    <section>
+      <h2>Limitations of AI/ML</h2>
+      <p>
+        A major limitation is that AI/ML models depend on the quality, size, and diversity of their
+        training data. This project uses only four DNA sequences, so the model may learn a simple rule
+        based on G count rather than a reliable biological pattern.
+      </p>
+      <p>
+        If a new sequence is very different from the training data, the model may make an unreliable
+        prediction. This is called poor generalisation. AI predictions should therefore be reviewed by
+        experts and validated experimentally before being used for important decisions.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    DNA Sequence Group Classifier | Machine Learning Project
+  </footer>
+
+  <script>
+    const trainingData = [
+      { id: "S1", sequence: "ATGCGATC", group: "A" },
+      { id: "S2", sequence: "ATGCGTAC", group: "A" },
+      { id: "S3", sequence: "GCGCGTAT", group: "B" },
+      { id: "S4", sequence: "GCGCGCGC", group: "B" }
+    ];
+
+    function extractFeatures(sequence) {
+      sequence = sequence.toUpperCase().replace(/\s/g, "");
+
+      if (sequence.length === 0) {
+        throw new Error("Please enter a DNA sequence.");
+      }
+
+      for (const base of sequence) {
+        if (!"ATGC".includes(base)) {
+          throw new Error("DNA sequence must contain only A, T, G, and C bases.");
+        }
+      }
+
+      const length = sequence.length;
+      const a = (sequence.match(/A/g) || []).length;
+      const t = (sequence.match(/T/g) || []).length;
+      const g = (sequence.match(/G/g) || []).length;
+      const c = (sequence.match(/C/g) || []).length;
+      const gcContent = ((g + c) / length) * 100;
+
+      return {
+        A: a,
+        T: t,
+        G: g,
+        C: c,
+        Length: length,
+        GC_percent: gcContent.toFixed(2)
+      };
+    }
+
+    function predictUsingDecisionTree(features) {
+      // This rule reproduces the Decision Tree trained on the four given sequences:
+      // G count of 2 belongs to Group A; G count of 3 or more belongs to Group B.
+      return features.G >= 3 ? "B" : "A";
+    }
+
+    function createTableRow(cells) {
+      const row = document.createElement("tr");
+      cells.forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+      return row;
+    }
+
+    function loadTables() {
+      const trainingBody = document.querySelector("#trainingTable tbody");
+      const featureBody = document.querySelector("#featureTable tbody");
+
+      trainingData.forEach(item => {
+        const features = extractFeatures(item.sequence);
+
+        trainingBody.appendChild(
+          createTableRow([item.id, item.sequence, item.group])
+        );
+
+        featureBody.appendChild(
+          createTableRow([
+            item.id,
+            item.sequence,
+            features.A,
+            features.T,
+            features.G,
+            features.C,
+            features.Length,
+            features.GC_percent,
+            item.group
+          ])
+        );
+      });
+    }
+
+    function predictGroup() {
+      const input = document.getElementById("dnaInput").value;
+      const resultBox = document.getElementById("result");
+
+      try {
+        const features = extractFeatures(input);
+        const prediction = predictUsingDecisionTree(features);
+
+        resultBox.className = "result " + (prediction === "A" ? "group-a" : "group-b");
+        resultBox.style.display = "block";
+
+        resultBox.innerHTML = `
+          <h3>Predicted group: ${prediction}</h3>
+          <p><strong>DNA sequence:</strong> ${input.toUpperCase()}</p>
+          <p><strong>A:</strong> ${features.A}</p>
+          <p><strong>T:</strong> ${features.T}</p>
+          <p><strong>G:</strong> ${features.G}</p>
+          <p><strong>C:</strong> ${features.C}</p>
+          <p><strong>Length:</strong> ${features.Length}</p>
+          <p><strong>GC content:</strong> ${features.GC_percent}%</p>
+          <p>
+            The model predicts Group ${prediction} because the sequence has
+            ${features.G} G bases and ${features.GC_percent}% GC content.
+            In the small training dataset, higher G counts were associated with Group B.
+          </p>
+        `;
+      } catch (error) {
+        resultBox.className = "result error";
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `<h3>Error</h3><p>${error.message}</p>`;
+      }
+    }
+
+    loadTables();
+  </script>
+</body>
+</html>
